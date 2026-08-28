@@ -1,0 +1,8 @@
+{
+  "chats": [
+    {"id": -1001234567890, "title": "Пример чата", "username": "example_chat"}
+  ],
+  "keywords": ["купить", "продам", "срочно"],
+  "stop_words": ["реклама"],
+  "monitoring_enabled": true
+}
