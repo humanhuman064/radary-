@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.enums import ParseMode
 
 from .handlers import router
@@ -21,5 +22,10 @@ def build_dispatcher(admin_ids: List[int]) -> Dispatcher:
     return dp
 
 
-def build_bot(token: str) -> Bot:
-    return Bot(token=token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+def build_bot(token: str, proxy_url: Optional[str] = None) -> Bot:
+    session = AiohttpSession(proxy=proxy_url) if proxy_url else None
+    return Bot(
+        token=token,
+        default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+        session=session,
+    )

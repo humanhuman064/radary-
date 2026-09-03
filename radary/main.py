@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from .bot.app import build_bot, build_dispatcher
 from .bot.notifier import Notifier
 from .config import ConfigManager
+from .proxy import parse_proxy_url
 from .userbot import Userbot
 
 logging.basicConfig(
@@ -32,11 +33,19 @@ async def run() -> None:
     session_name = os.environ.get("SESSION_NAME", "data/userbot")
     config_path = os.environ.get("CONFIG_PATH", "data/config.json")
 
+    proxy_url = os.environ.get("PROXY_URL", "").strip()
+    try:
+        telethon_proxy = parse_proxy_url(proxy_url)
+    except ValueError as exc:
+        raise SystemExit(f"Некорректный PROXY_URL: {exc}") from None
+    if telethon_proxy:
+        logger.info("Используется прокси %s:%s для подключения к Telegram", telethon_proxy[1], telethon_proxy[2])
+
     config_manager = ConfigManager(config_path)
 
-    bot = build_bot(bot_token)
+    bot = build_bot(bot_token, proxy_url=proxy_url or None)
     notifier = Notifier(bot, admin_ids)
-    userbot = Userbot(session_name, api_id, api_hash, config_manager, notifier)
+    userbot = Userbot(session_name, api_id, api_hash, config_manager, notifier, proxy=telethon_proxy)
 
     dp = build_dispatcher(admin_ids)
     dp["config_manager"] = config_manager

@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import logging
-from typing import Union
+from typing import Optional, Union
 
 from telethon import TelegramClient, events
 from telethon.tl.types import TypeInputPeer
 
 from .config import ConfigManager
 from .filters import should_forward
+from .proxy import TelethonProxy
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +23,9 @@ class Userbot:
         api_hash: str,
         config_manager: ConfigManager,
         notifier,
+        proxy: Optional[TelethonProxy] = None,
     ):
-        self.client = TelegramClient(session_path, api_id, api_hash)
+        self.client = TelegramClient(session_path, api_id, api_hash, proxy=proxy)
         self.config_manager = config_manager
         self.notifier = notifier
 
